@@ -1,5 +1,3 @@
-from os import error
-from platform import linux_distribution
 import paho.mqtt.client as mqtt
 import crypt
 
