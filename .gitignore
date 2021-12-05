@@ -1,0 +1,5 @@
+.venv
+.key.key
+__pycache__/
+workspace.code-workspace
+config.json

@@ -1,0 +1,6 @@
+{
+    "user": "myuser",
+    "password": "mypassword",
+    "hostname": "myhost",
+    "port": 1883
+}
