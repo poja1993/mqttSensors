@@ -15,36 +15,39 @@ def on_connect(client, userdata, flags, rc):
 
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    client.publish(userdata["myTopic"] + "/availability", payload = "online", qos = 0, retain = True)
     client.subscribe(userdata["myTopic"] + "/request")
-    
+
+    # Publish availability topic
+    client.publish(userdata["myTopic"] + "/availability", payload = "online", qos = 0, retain = True)
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
-    print(msg.topic+" "+str(msg.payload.decode()))
+    # Trigger only on myTopic/request
     if (msg.topic+" "+str(msg.payload.decode()) == userdata["myTopic"] + "/request ON"):
-        print("state_topic on")
+        # Request ON action
         client.publish(userdata["myTopic"] + "/state_topic", payload="ON", qos=0, retain=False)
     elif (msg.topic+" "+str(msg.payload.decode()) == userdata["myTopic"] + "/request OFF"):
-        print("state_topic off")
+        # Request OFF action
         client.publish(userdata["myTopic"] + "/state_topic", payload="OFF", qos=0, retain=False)
 
-def main():
-    userData = {"myTopic" : "mirror"}
+def main(userData):
+    # Create instance with parameter
     client = mqtt.Client(userdata = userData)
+    # Set LWT message: availability offline
     client.will_set(userData["myTopic"] + "/availability", payload = "offline", qos = 0, retain = True)
+    # Set callbacks
     client.on_connect = on_connect
     client.on_message = on_message
+    # Get user info from Json
     data = crypt.get_user_info()
     client.username_pw_set(username = data["user"], password = data["password"])
-
+    # Connect
     client.connect(data["hostname"], data["port"], 60)
 
-    # Blocking call that processes network traffic, dispatches callbacks and
-    # handles reconnecting.
-    # Other loop*() functions are available that give a threaded interface and a
-    # manual interface.
+    # Start loop
     client.loop_forever()
 
 if __name__ == "__main__":
-    main()
+    # Set Topic to use
+    userData = {"myTopic" : "mirror"}
+    main(userData)
