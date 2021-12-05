@@ -1,7 +1,11 @@
-# mqttSensors
+# mqttSwitch
+Create a Switch based on MQTT and HomeAssistant.\
+The following sub-topics are used:
+- availability: online/offline
+- request: ON/OFF, Command request from HomeAssistant
+- state_topic: ON/OFF, Feedback to command
 
 In homeassistant, add in the configuration.yaml the following:
-
 ```yaml
 switch:
   - platform: mqtt
