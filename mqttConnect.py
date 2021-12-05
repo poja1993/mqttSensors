@@ -15,31 +15,24 @@ def on_connect(client, userdata, flags, rc):
 
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    client.publish("mirror/availability", payload = "online", qos = 0, retain = True)
-    client.subscribe("mirror/request")
+    client.publish(userdata["myTopic"] + "/availability", payload = "online", qos = 0, retain = True)
+    client.subscribe(userdata["myTopic"] + "/request")
+    
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
     print(msg.topic+" "+str(msg.payload.decode()))
-    if (msg.topic+" "+str(msg.payload.decode()) == "mirror/request ON"):
+    if (msg.topic+" "+str(msg.payload.decode()) == userdata["myTopic"] + "/request ON"):
         print("state_topic on")
-        client.publish("mirror/state_topic", payload="ON", qos=0, retain=False)
-    elif (msg.topic+" "+str(msg.payload.decode()) == "mirror/request OFF"):
+        client.publish(userdata["myTopic"] + "/state_topic", payload="ON", qos=0, retain=False)
+    elif (msg.topic+" "+str(msg.payload.decode()) == userdata["myTopic"] + "/request OFF"):
         print("state_topic off")
-        client.publish("mirror/state_topic", payload="OFF", qos=0, retain=False)
-
-# def get_line(line, id):
-#     return line.strip().strip(id).strip()
-# def get_user_info():
-#     try:
-#         with open("config.json","r") as file:
-#             data = json.load(file)
-#             return(data["user"], data["password"])
-#     except IOError:
-#         print("Cannot open mqttConnect.conf")
+        client.publish(userdata["myTopic"] + "/state_topic", payload="OFF", qos=0, retain=False)
 
 def main():
-    client = mqtt.Client()
+    userData = {"myTopic" : "mirror"}
+    client = mqtt.Client(userdata = userData)
+    client.will_set(userData["myTopic"] + "/availability", payload = "offline", qos = 0, retain = True)
     client.on_connect = on_connect
     client.on_message = on_message
     data = crypt.get_user_info()
