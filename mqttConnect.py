@@ -25,9 +25,11 @@ def on_message(client, userdata, msg):
     # Trigger only on myTopic/request
     if (msg.topic+" "+str(msg.payload.decode()) == userdata["myTopic"] + "/request ON"):
         # Request ON action
+        userdata["onAction"]()
         client.publish(userdata["myTopic"] + "/state_topic", payload="ON", qos=0, retain=False)
     elif (msg.topic+" "+str(msg.payload.decode()) == userdata["myTopic"] + "/request OFF"):
         # Request OFF action
+        userdata["offAction"]()
         client.publish(userdata["myTopic"] + "/state_topic", payload="OFF", qos=0, retain=False)
 
 def main(userData):
