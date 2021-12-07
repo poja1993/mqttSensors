@@ -41,7 +41,8 @@ def main(userData):
     client.on_connect = on_connect
     client.on_message = on_message
     # Get user info from Json
-    data = crypt.get_user_info()
+    cryp = crypt.pwdCrypt()
+    data = cryp.get_user_info()
     client.username_pw_set(username = data["user"], password = data["password"])
     # Connect
     client.connect(data["hostname"], data["port"], 60)
