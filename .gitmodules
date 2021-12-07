@@ -1,0 +1,3 @@
+[submodule "pwdCrypt"]
+	path = pwdCrypt
+	url = ../pwdCrypt
