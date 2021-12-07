@@ -1,5 +1,5 @@
 import paho.mqtt.client as mqtt
-import crypt
+import pwdCrypt.crypt as crypt
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
