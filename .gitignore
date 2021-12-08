@@ -3,3 +3,8 @@
 __pycache__/
 workspace.code-workspace
 config.json
+/bin
+/lib
+pyvenv.cfg
+/share
+
