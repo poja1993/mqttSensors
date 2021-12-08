@@ -1,0 +1,14 @@
+[Unit]
+Description=Service for mqttSwitch
+After=network.target
+
+[Service]
+Type=simple
+User=myuser
+WorkingDirectory=/path/to/mqttSwitch
+Environment=PYTHONPATH=/home/dietpi/python_scripts/mqttSwitch
+ExecStart=/path/to/mqttSwitch/bin/python magicMirror.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

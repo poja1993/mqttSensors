@@ -7,4 +7,4 @@ config.json
 /lib
 pyvenv.cfg
 /share
-
+mqttSwitch.service
