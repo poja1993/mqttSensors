@@ -1,10 +1,19 @@
 import mqttConnect
+import subprocess
 
 def on_action():
-    print("On Action")
+    """
+    When the request is ON, turn on the display
+    """
+    cmd = "sudo vcgencmd display_power 1"
+    return(subprocess.call(cmd, shell=True))
 
 def off_action():
-    print("Off Action")
+    """
+    When the request is OFF, turn off the display
+    """
+    cmd = "sudo vcgencmd display_power 0"
+    return(subprocess.call(cmd, shell=True))
 
 if __name__ == "__main__":
     # Set Topic to use
