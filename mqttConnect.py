@@ -17,26 +17,24 @@ def on_connect(client, userdata, flags, rc):
     # reconnect then subscriptions will be renewed.
     client.subscribe(userdata["myTopic"] + "/request")
 
+    discoverable_topic = "homeassistant/" + userdata["type"] + "/" + userdata["myTopic"]
+    # Publish config {"device_class":"temperature","name":"raspi3 Temperature","state_topic":"system-sensors/sensor/raspi3/state","unit_of_measurement":"°C","value_template":"{{value_json.temperature}}","unique_id":"raspi3_sensor_temperature","availability_topic":"system-sensors/sensor/raspi3/availability","device":{"identifiers":["raspi3_sensor"],"name":"raspi3 Sensors","model":"RPI raspi3", "manufacturer":"RPI"},"icon":"mdi:thermometer"}
+    configPayload = """{"~": \"""" + userdata["myTopic"] + """","uniq_id": \"""" + userdata["myTopic"] + """","name": "Magic Mirror","cmd_t": "~/request","stat_t": "~/state_topic","avty_t": "~/availability","device":{"identifiers":["magic_mirror"],"name":"Magic Mirror","model":"v0", "manufacturer":"Gabi"}}"""
+    client.publish(discoverable_topic + "/config", payload = configPayload, qos = 0, retain = True)
+    
     # Publish availability topic
     client.publish(userdata["myTopic"] + "/availability", payload = "online", qos = 0, retain = True)
+    client.publish(userdata["myTopic"] + "/state_topic", payload = userdata["getStatus"](), qos=0, retain=True)
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
     # Trigger only on myTopic/request
     if (msg.topic+" "+str(msg.payload.decode()) == userdata["myTopic"] + "/request ON"):
         # Request ON action
-        if (userdata["onAction"]() == 0):
-            myPayload = "ON"
-        else:
-            myPayload = "OFF"
-        client.publish(userdata["myTopic"] + "/state_topic", payload=myPayload, qos=0, retain=False)
+        client.publish(userdata["myTopic"] + "/state_topic", payload = userdata["onAction"](), qos=0, retain=True)
     elif (msg.topic+" "+str(msg.payload.decode()) == userdata["myTopic"] + "/request OFF"):
         # Request OFF action
-        if (userdata["offAction"]() == 0):
-            myPayload = "OFF"
-        else:
-            myPayload = "ON"
-        client.publish(userdata["myTopic"] + "/state_topic", payload=myPayload, qos=0, retain=False)
+        client.publish(userdata["myTopic"] + "/state_topic", payload = userdata["offAction"](), qos=0, retain=True)
     
 def main(userData):
     # Create instance with parameter
