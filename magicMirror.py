@@ -40,6 +40,7 @@ def get_status():
 if __name__ == "__main__":
     # Set Topic to use
     userData = {"myTopic" : "magicMirror"}
+    userData["name"] = "Magic MIrror"
     userData["type"] = "switch"
     userData["onAction"] = on_action
     userData["offAction"] = off_action

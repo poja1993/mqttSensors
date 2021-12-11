@@ -1,5 +1,23 @@
 import paho.mqtt.client as mqtt
 import pwdCrypt.crypt as crypt
+import json
+
+def create_config_payload(userdata):
+    device = {}
+    device["identifiers"] = ["magic_mirror"]
+    device["name"] = userdata["name"]
+    device["model"] = "-"
+    device["manufacturer"] = "Gabi"
+
+    config = {}
+    config["~"] = userdata["myTopic"]
+    config["uniq_id"] = userdata["myTopic"]
+    config["name"] = userdata["name"]
+    config["cmd_t"] = "~/request"
+    config["stat_t"] = "~/state_topic"
+    config["avty_t"] = "~/availability"
+    config["device"] = device
+    return json.dumps(config)
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -19,7 +37,7 @@ def on_connect(client, userdata, flags, rc):
 
     discoverable_topic = "homeassistant/" + userdata["type"] + "/" + userdata["myTopic"]
     # Publish config {"device_class":"temperature","name":"raspi3 Temperature","state_topic":"system-sensors/sensor/raspi3/state","unit_of_measurement":"°C","value_template":"{{value_json.temperature}}","unique_id":"raspi3_sensor_temperature","availability_topic":"system-sensors/sensor/raspi3/availability","device":{"identifiers":["raspi3_sensor"],"name":"raspi3 Sensors","model":"RPI raspi3", "manufacturer":"RPI"},"icon":"mdi:thermometer"}
-    configPayload = """{"~": \"""" + userdata["myTopic"] + """","uniq_id": \"""" + userdata["myTopic"] + """","name": "Magic Mirror","cmd_t": "~/request","stat_t": "~/state_topic","avty_t": "~/availability","device":{"identifiers":["magic_mirror"],"name":"Magic Mirror","model":"v0", "manufacturer":"Gabi"}}"""
+    configPayload = create_config_payload(userdata)
     client.publish(discoverable_topic + "/config", payload = configPayload, qos = 0, retain = True)
     
     # Publish availability topic
