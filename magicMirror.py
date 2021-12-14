@@ -1,5 +1,6 @@
 import mqttConnect
 import subprocess
+import pwdCrypt.crypt as crypt
 
 def handle_cmd(cmd):
     process = subprocess.Popen(cmd, shell=True,
@@ -38,11 +39,14 @@ def get_status():
     return(handle_cmd(cmd))
 
 if __name__ == "__main__":
-    # Set Topic to use
-    userData = {"myTopic" : "magicMirror"}
-    userData["name"] = "Magic MIrror"
-    userData["type"] = "switch"
+    # Get info from config.json
+    crypt = crypt.pwdCrypt()
+    userData = crypt.get_user_info()
+
+    # Add actions definition
     userData["onAction"] = on_action
     userData["offAction"] = off_action
     userData["getStatus"] = get_status
+
+    # Call MAIN of mqttConnect
     mqttConnect.main(userData)
