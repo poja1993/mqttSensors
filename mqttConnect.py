@@ -3,23 +3,6 @@ import pwdCrypt.crypt as crypt
 import json
 import time
 
-def create_config_payload(userdata):
-    # device = {}
-    # device["identifiers"] = ["magic_mirror"]
-    # device["name"] = userdata["name"]
-    # device["model"] = "-"
-    # device["manufacturer"] = "Gabi"
-
-    # config = {}
-    # config["~"] = userdata["myTopic"]
-    # config["uniq_id"] = userdata["myTopic"]
-    # config["name"] = userdata["name"]
-    # config["cmd_t"] = "~/request"
-    # config["stat_t"] = "~/state_topic"
-    # config["avty_t"] = "~/availability"
-    # config["device"] = device
-    return json.dumps(userdata["topic"])
-
 # Get the actual status and publish state_topic
 def check_state(client, userdata):
   client.publish("{}{}".format(userdata["topic"]["~"], userdata["topic"]["stat_t"][1:]), payload = userdata["getStatus"](), qos=0, retain=True) 
@@ -41,14 +24,14 @@ def on_connect(client, userdata, flags, rc):
     # reconnect then subscriptions will be renewed.
     client.subscribe("{}{}".format(userdata["topic"]["~"], userdata["topic"]["cmd_t"][1:]))
 
+    # Publish config message
     discoverable_topic = "{}/{}/{}/config".format(userdata["disc_topic"], userdata["type"], userdata["topic"]["~"])
-    # Publish config {"device_class":"temperature","name":"raspi3 Temperature","state_topic":"system-sensors/sensor/raspi3/state","unit_of_measurement":"°C","value_template":"{{value_json.temperature}}","unique_id":"raspi3_sensor_temperature","availability_topic":"system-sensors/sensor/raspi3/availability","device":{"identifiers":["raspi3_sensor"],"name":"raspi3 Sensors","model":"RPI raspi3", "manufacturer":"RPI"},"icon":"mdi:thermometer"}
-    print(create_config_payload(userdata))
     configPayload = json.dumps(userdata["topic"])
     client.publish(discoverable_topic, payload = configPayload, qos = 0, retain = True)
     # Publish availability topic
     client.publish("{}{}".format(userdata["topic"]["~"], userdata["topic"]["avty_t"][1:]), payload = "online", qos = 0, retain = True)
     #client.publish(userdata["myTopic"] + "/state_topic", payload = userdata["getStatus"](), qos=0, retain=True)
+    # Update actual status
     check_state(client, userdata)
 
 # The callback for when a PUBLISH message is received from the server.

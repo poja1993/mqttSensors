@@ -2,5 +2,22 @@
     "user": "myuser",
     "password": "mypassword",
     "hostname": "myhost",
-    "port": 1883
+    "port": 1883,
+    "disc_topic": "homeassistant",
+    "type": "switch",
+
+    "topic": {
+        "name": "Magic Mirror",
+        "~": "magicMirror",
+        "uniq_id": "magicMirror",
+        "cmd_t": "~/request",
+        "stat_t": "~/state_topic",
+        "avty_t": "~/availability",
+        "device": {
+            "identifiers": ["magic_mirror"],
+            "name": "Magic Mirror",
+            "model": "Raspi0",
+            "manufacturer": "RPI"
+        }
+    }
 }
